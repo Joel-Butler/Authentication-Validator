@@ -1,0 +1,2 @@
+# Requester service
+When triggered by a user request (authentication not required for this test), this service authenticates as a service to Auth0 and then performs an API to API request to CentralService. 
