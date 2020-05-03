@@ -5,10 +5,21 @@ block content
   p Welcome to #{title}
 
   p Authentication status: #{Auth}
-  ul
-   li Authenticate
-   li Test service
+  if UserDetails
+    p Details: 
+    - var photo = UserDetails.picture
+    ul
+      li Name: #{UserDetails.name} 
+      li Email: #{UserDetails.email}
+      li Locale: #{UserDetails.locale}
+      li Photo: 
+        img(src=photo)
 
-  p 
-    a(href='/login') login | 
-    a(href='/logout') logout
+    ul
+      li Authenticate
+      li Test service
+    p 
+      a(href='/logout') logout
+  else 
+    p 
+      a(href='/login') login
