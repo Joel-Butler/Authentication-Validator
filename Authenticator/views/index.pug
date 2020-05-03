@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+
+  p Authentication status: #{Auth}
+  ul
+   li Authenticate
+   li Test service
+
+  p 
+    a(href='/login') login | 
+    a(href='/logout') logout
