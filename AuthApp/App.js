@@ -3,7 +3,7 @@
  * @flow
  */
 
-import React, {  Component } from 'react';
+import React, {  Component, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -12,64 +12,55 @@ import {
   Button,
   Alert
 } from 'react-native';
-import { Provider } from 'react-redux';
-
 import Auth0 from 'react-native-auth0';
 const auth0 = new Auth0({ domain: 'dev-9lskuac3.auth0.com', clientId: 'rZRwpkFw6N6qSTdWJH6LCnWbMu6UoMTj' });
 
-class myApp extends React.Component {
-
-  constructor(props) {
-      super(props);
-      this.state = {accessToken: ""};
-  }
-
-  _onLogin() {
-    try { var result = 
-      auth0.webAuth
-      .authorize({scope: 'openid profile email'})
-      .then(credentials => {
-        Alert.alert('AccessToken: ' + credentials.accessToken);
-        console.log(JSON.stringify(this));
-        this.state.accessToken = credentials.accessToken;
-      });
-    }
-    catch (error) {
-      console.log(error);
-    }
-
-  }
-
-  _onLogout() {
-    try {var result = 
-      auth0.webAuth
-        .clearSession({})
-        .then(success => {
-          Alert.alert('Logged out!');
-          this.setState({ accessToken: null });
-      });
-      
-    }
-    catch (error) {
-      console.log(error);
-    }
-  }
-
-
-  render() {
-      return (
-      <Provider store={store}>
-        <View style = { styles.container }>
-          <Text style = { styles.header }> Auth0Sample - Login </Text>
-          <Text>
-              Todo - figure out login state... token: {this.state.accessToken}</Text>
-              <Button onPress = {this._onLogin}
-              title = 'Log in' />
-        </View >
-      </Provider>
-      );
-  }
+export default function myApp () {
+  const [credentials, setCredentials] = useState(null);
+    return (
+      <View style = { styles.container }>
+        <Text style = { styles.header }> Auth0Sample - Login </Text>
+        <Text>Login State: {credentials} </Text>
+        <UserStatus />
+      </View >
+    );
 }
+
+function UserStatus() {
+  const [credentials, setCredentials] = useState(null);
+  return(
+      
+      <Button onPress = { (credentials == null) ? ()=> {
+        try { var result = 
+          auth0.webAuth
+          .authorize({scope: 'openid profile email'})
+          .then(credentials => {
+            Alert.alert('AccessToken: ' + credentials.accessToken);
+            setCredentials(credentials.accessToken);
+          });
+        }
+        catch (error) {
+          console.log(error);
+        }
+      } : ()=> {
+        try {var result = 
+          auth0.webAuth
+            .clearSession({})
+            .then(success => {
+              Alert.alert('Logged out!');
+              setCredentials(credentials.accessToken);
+          });
+          
+        }
+        catch (error) {
+          console.log(error);
+        } 
+      } }
+      title = { credentials ? 'Log out' : 'Log in' } />
+
+  );
+}
+
 
 const styles = StyleSheet.create({
   container: {
@@ -84,6 +75,3 @@ const styles = StyleSheet.create({
       margin: 10
   }
 });
-
-
-export default myApp;
